@@ -1,12 +1,10 @@
 package de.codekenner.puppy
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -46,24 +44,40 @@ fun SearchBar(value: String, onSearchTermChange: (String) -> Unit) {
         onValueChange = onSearchTermChange,
         label = { Text(text = "Search by name") },
         leadingIcon = { Icon(imageVector = Icons.Filled.Search, contentDescription = "") },
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
     )
 }
 
 @Composable
 fun Puppies(puppies: List<Puppy>, onItemSelected: (Puppy) -> Unit) {
-    LazyColumn {
-        items(puppies, key = Puppy::id) { puppy ->
-            Puppy(puppy, onItemSelected)
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        itemsIndexed(puppies, key = { _, item -> item.id }) { idx, puppy ->
+            val color = if (idx % 2 == 0)
+                MaterialTheme.colors.secondary
+            else
+                MaterialTheme.colors.secondaryVariant
+
+            Puppy(
+                puppy = puppy,
+                onClick = onItemSelected,
+                modifier = Modifier.background(
+                    color
+                )
+            )
         }
     }
 }
 
 @Composable
-fun Puppy(puppy: Puppy, onClick: (Puppy) -> Unit) {
-    Row(modifier = Modifier
-        .clickable { onClick(puppy) }
-        .padding(16.dp)) {
+fun Puppy(puppy: Puppy, onClick: (Puppy) -> Unit, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .clickable { onClick(puppy) }
+            .padding(16.dp),
+    ) {
         Column {
             Text(
                 text = puppy.name,

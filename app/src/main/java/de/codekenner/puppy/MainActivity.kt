@@ -38,10 +38,11 @@ class MainActivity : AppCompatActivity() {
                         when (viewState) {
                             is PuppyList -> PuppyListScreen(
                                 viewState,
-                                onFilterChanged = viewModel::onFilterChanged,
-                                onItemSelected = viewModel::onItemSelected
+                                onViewEvent = viewModel::onViewEvent
                             )
-                            is PuppyDetails -> PuppyDetailsScreen(puppyDetails = viewState)
+                            is PuppyDetails -> PuppyDetailsScreen(
+                                puppyDetails = viewState
+                            )
                         }
                     }
                 }
@@ -53,95 +54,5 @@ class MainActivity : AppCompatActivity() {
         if (viewModel.onBackPressed()) {
             super.onBackPressed()
         }
-    }
-}
-
-@Composable
-fun PuppyDetailsScreen(
-    puppyDetails: PuppyDetails,
-) {
-    Text(text = puppyDetails.puppy.name, style = MaterialTheme.typography.h2)
-}
-
-@Composable
-fun PuppyListScreen(
-    puppyList: PuppyList,
-    onFilterChanged: (String) -> Unit = {},
-    onItemSelected: (Int) -> Unit = {},
-) {
-    Column {
-        Text(text = "Welcome", style = MaterialTheme.typography.h2)
-        SearchBar(puppyList.filter, onSearchTermChange = onFilterChanged)
-        Puppies(puppyList.puppies, onItemSelected)
-    }
-}
-
-@Composable
-fun SearchBar(value: String, onSearchTermChange: (String) -> Unit) {
-    TextField(
-        value = value,
-        onValueChange = onSearchTermChange,
-        label = { Text(text = "Search by name") },
-        leadingIcon = { Icon(imageVector = Icons.Filled.Search, contentDescription = "") },
-        modifier = Modifier.fillMaxWidth()
-    )
-}
-
-@Composable
-fun Puppies(puppies: List<Puppy>, onItemSelected: (Int) -> Unit) {
-    LazyColumn {
-        items(puppies, key = Puppy::id) { puppy ->
-            Puppy(puppy, onItemSelected)
-        }
-    }
-}
-
-@Composable
-fun Puppy(puppy: Puppy, onClick: (Int) -> Unit) {
-    Row(modifier = Modifier
-        .clickable { onClick(puppy.id) }
-        .padding(16.dp)) {
-        Column {
-            Text(
-                text = puppy.name,
-                style = MaterialTheme.typography.h4,
-                maxLines = 1
-            )
-            Text(
-                text = "${puppy.ageInMonths} months",
-                modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.subtitle1,
-                textAlign = TextAlign.End
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultListPreview() {
-    PuppyTheme {
-        PuppyListScreen(
-            PuppyList(
-                filter = "abc",
-                puppies = listOf(
-                    Puppy(id = 1, name = "Baron", Gender.MALE, ageInMonths = 33),
-                    Puppy(id = 2, name = "Apollo", Gender.MALE, ageInMonths = 2),
-                    Puppy(id = 5, name = "sdfdsf", Gender.MALE, ageInMonths = 2),
-                )
-            )
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DetailsPreview() {
-    PuppyTheme {
-        PuppyDetailsScreen(
-            PuppyDetails(
-                Puppy(id = 1, name = "Baron", Gender.MALE, ageInMonths = 33)
-            )
-        )
     }
 }

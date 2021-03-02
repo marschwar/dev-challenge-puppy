@@ -8,8 +8,8 @@ class PuppyViewModel : ViewModel() {
 
     private var currentListData = PuppyList()
 
-    private val _viewState: MutableLiveData<ApplicationViewState> = MutableLiveData(currentListData)
-    val viewState: LiveData<ApplicationViewState> = _viewState
+    private val _viewState: MutableLiveData<ViewState> = MutableLiveData(currentListData)
+    val viewState: LiveData<ViewState> = _viewState
 
     init {
         updateList(PuppyList(puppies = PuppyRepository.findPuppies(), filter = ""))
@@ -28,11 +28,18 @@ class PuppyViewModel : ViewModel() {
         return true
     }
 
-    fun onFilterChanged(filter: String) {
+    fun onViewEvent(viewEvent: ViewEvent) {
+        when (viewEvent) {
+            is FilterChanged -> onFilterChanged(viewEvent.filter)
+            is PuppySelected -> onItemSelected(viewEvent.puppy)
+        }
+    }
+
+    private fun onFilterChanged(filter: String) {
         updateList(PuppyList(puppies = PuppyRepository.findPuppies(filter), filter = filter))
     }
 
-    fun onItemSelected(id: Int) {
-        _viewState.value = PuppyDetails(PuppyRepository.findById(id))
+    private fun onItemSelected(puppy: Puppy) {
+        _viewState.value = PuppyDetails(puppy)
     }
 }
